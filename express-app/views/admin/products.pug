@@ -29,7 +29,7 @@ block content
                             a.btn.btn-primary.btn-sm.mr-2(href=`/admin/products/${product.id}`) Edit
 
                             form(action='/admin/delete-product' method='POST')
-                                input(type='hidden' name='productid' value=`${productid}`)
+                                input(type='hidden' name='productid' value=`${product.id}`)
                                 button(type='submit').btn.btn-danger.btn-sm Delete
     else
         h1 No Products

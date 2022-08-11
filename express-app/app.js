@@ -13,6 +13,11 @@ const userRoutes = require("./routes/shop");
 const errorController = require("./controllers/errors");
 const sequelize = require("./utility/database");
 
+
+const Category = require('./models/category');
+const Product = require('./models/product');
+
+
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 
@@ -22,8 +27,16 @@ app.use(userRoutes);
 
 app.use(errorController.get404Page);
 
+// Product.hasOne(Category);  //belongsTo ile aynı işlemi yapıyor
+Product.belongsTo(Category, {
+  foreignKey: {
+    allowNull: false
+  }
+});  //bire vir ilişki 
+Category.hasMany(Product);    //bire çok ilişki
+
 sequelize
-  .sync()
+  .sync({force : true})
   .then((result) => {
     console.log(result);
   })
