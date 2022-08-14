@@ -8,10 +8,10 @@ app.set("view engine", "pug");
 app.set("views", "./views");
 
 const adminRoutes = require("./routes/admin");
-// const userRoutes = require("./routes/shop");
+const userRoutes = require("./routes/shop");
 
 const errorController = require("./controllers/errors");
-const mongoConnect = require('./utility/database').mongoConnect;
+const mongoConnect = require("./utility/database").mongoConnect;
 
 // ? Bunlar mysql ile oluşturduklarımız.
 //? const sequelize = require("./utility/database");
@@ -24,10 +24,21 @@ const mongoConnect = require('./utility/database').mongoConnect;
 //? const Order = require("./models/order");
 //? const OrderItem = require("./models/orderItem");
 
-
+const User = require("./models/user");
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
+
+app.use((req,res,next) => {
+  User.findByUserName('sadikturan')
+  .then(user => {
+    req.user = new User(user.name, user.email,user._id);
+    next()
+  })
+  .catch(err => {
+    console.log(err)
+  })
+})
 
 //? app.use((req, res, next) => {
 //?   User.findByPk(1)
@@ -42,7 +53,7 @@ app.use(express.static(path.join(__dirname, "public")));
 
 // routes
 app.use("/admin", adminRoutes);
-// app.use(userRoutes);
+app.use(userRoutes);
 
 app.use(errorController.get404Page);
 
@@ -112,8 +123,20 @@ app.use(errorController.get404Page);
 //     console.log(err);
 //   });
 
-
 mongoConnect((client) => {
-  app.listen(3000);
-})
-
+  User.findByUserName("sadikturan")
+    .then((user) => {
+      if (!user) {
+        user = new User("sadikturan", "email@sadikturan");
+        return user.save();
+      }
+      return user;
+    })
+    .then((user) => {
+      console.log(user);
+      app.listen(3000);
+    })
+    .catch(err => {
+      console.log(err)
+    })
+});
