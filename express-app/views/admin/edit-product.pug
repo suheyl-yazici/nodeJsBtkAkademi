@@ -26,7 +26,7 @@ block content
         .form-group.row
             label(for="categoryid").col-sm-2.col-form-label Category
             .col-sm-10
-                each category in categories 
+                each category in categories
                     input(type="checkbox" name="categoryids" value=`${category._id}` checked=category.selected)
                     | #{category.name}
                     br

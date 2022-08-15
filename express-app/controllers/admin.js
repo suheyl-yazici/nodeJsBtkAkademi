@@ -60,7 +60,8 @@ exports.postAddProduct = (req, res, next) => {
 exports.getEditProduct = (req, res, next) => {
   Product.findById(req.params.productid)
     .then((product) => {
-      Category.findAll().then((categories) => {
+      Category.findAll()
+      .then((categories) => {
         categories = categories.map((category) => {
           if (product.categories) {
             product.categories.find((item) => {
