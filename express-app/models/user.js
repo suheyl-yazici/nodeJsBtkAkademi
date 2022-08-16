@@ -43,8 +43,8 @@ class User {
       .collection("products")
       .find({
         _id: {
-            $in: ids
-        }
+          $in: ids,
+        },
       })
       .toArray()
       .then((products) => {
@@ -52,7 +52,7 @@ class User {
           return {
             ...p,
             quantity: this.cart.items.find((i) => {
-            return i.productId.toString() === p._id.toString();
+              return i.productId.toString() === p._id.toString();
             }).quantity,
           };
         });
@@ -116,6 +116,71 @@ class User {
       .catch((err) => {
         console.log(err);
       });
+  }
+  deleteCartItem(productid) {
+    const cartItems = this.cart.items.filter((item) => {
+      return item.productId.toString() !== productid.toString();
+    });
+
+    const db = getDb();
+    return db.collection("users").updateOne(
+      {
+        _id: new mongodb.ObjectId(this._id),
+      },
+      {
+        $set: {
+          cart: { items: cartItems },
+        },
+      }
+    );
+  }
+
+  addOrder() {
+    const db = getDb();
+    return this.getCart()
+      .then((products) => {
+        const order = {
+          items: products.map((item) => {
+            return {
+              _id: item._id,
+              name: item.name,
+              price: item.price,
+              imageUrl: item.imageUrl,
+              userId: item.userId,
+              quantity: item.quantity,
+            }
+          }),
+          user: {
+            _id: mongodb.ObjectId(this._id),
+            name: this.name,
+            email: this.email,
+          },
+          date: new Date().toLocaleString(),
+        };
+
+        return db.collection("orders").insertOne(order);
+      })
+      .then(() => {
+        this.cart = { items: [] };
+        return db.collection("users").updateOne(
+          { _id: new mongodb.ObjectId(this._id) },
+          {
+            $set: {
+              cart: {
+                items: []
+              }
+            }
+          }
+        );
+      });
+  }
+
+  getOrders() {
+    const db = getDb();
+    return db.collection('orders')
+      .find({'user_id' : new mongodb.ObjectId(this._id) })
+      .toArray();
+
   }
 }
 
