@@ -17,7 +17,21 @@
 // });
 
 
+const mongoose = require('mongoose');
 
+categorySchema = mongoose.Schema({
+    name: {
+        type: String,
+        required: true
+    },
+    description: String
+})
+
+module.exports = mongoose.model('Category', categorySchema);
+
+
+//? normal veri tabanı ile yaptığım
+/*
 const getDb = require("../utility/database").getdb;
 const mongodb = require("mongodb");
 
@@ -54,3 +68,4 @@ class Category {
 }
 
 module.exports = Category;
+*/

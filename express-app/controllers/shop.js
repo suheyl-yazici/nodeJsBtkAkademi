@@ -4,21 +4,18 @@ const Category = require("../models/category");
 exports.getIndex = (req, res, next) => {
   Product.find()
     .then((products) => {
-      res.render("shop/index", {
-        title: "Shopping",
-        products: products,
-        path: "/",
-      });
-
-      // Category.findAll()
-      // .then(categories => {
-      //   res.render("shop/index", {
-      //     title: "Shopping",
-      //     products: products,
-      //     path: "/",
-      //     categories: categories,
-      //   });
-      // })
+      return products;
+    })
+    .then(products => {
+      Category.find()
+      .then(categories => {
+        res.render("shop/index", {
+          title: "Shopping",
+          products: products,
+          path: "/",
+          categories: categories,
+        });
+      })
     })
     .catch((err) => {
       console.log(err);
@@ -26,45 +23,21 @@ exports.getIndex = (req, res, next) => {
 };
 
 exports.getProducts = (req, res, next) => {
-  // eq (equal)
-  // ne (not equal)
-  // gt (greater than)
-  // gte (greater than or equal)
-  // lt (less than)
-  // lte (less than or equal)
-  // in
-  // nin (not in)
-
-  Product.find()
-    // .find({price: {$eq: 2000}})
-    // .find({price: {$ne: 2000}})
-    // .find({price: {$gt: 2000}})
-    // .find({price: {$gte: 2000}})
-    // .find({price: {$lt: 2000}})
-    // .find({price: {$lte: 2000}})
-    // .find({price: {$in: [1000,2000,3000]}})
-    // .find({price: {$gte: 1000 , $lte: 2000}})
-    // .or([{ price: {$gt: 2000}, name: 'samsung s2 }])
-    //* Samsung:  cümlenin neresinde geçiyor
-    // .find({name: /^samsung/})    //starts with
-    // .find({name: /samsung$/})    // ends with
-    // .find({name: /.*samsung.*/})    //contains
+  Product
+  .find()
     .then((products) => {
-      res.render("shop/products", {
-        title: "Products",
-        products: products,
-        path: "/",
-      });
-
-      // Category.findAll()
-      // .then(categories => {
-      //   res.render("shop/products", {
-      //     title: "Products",
-      //     products: products,
-      //     path: "/",
-      //     categories: categories,
-      //   });
-      // })
+      return products;
+    })
+    .then(products => {
+      Category.find()
+      .then(categories => {
+        res.render("shop/products", {
+          title: "Products",
+          products: products,
+          path: "/",
+          categories: categories,
+        });
+      })
     })
     .catch((err) => {
       console.log(err);
@@ -75,10 +48,12 @@ exports.getProductsByCategoryId = (req, res, next) => {
   const categoryid = req.params.categoryid;
   const model = [];
 
-  Category.findAll()
+  Category.find()
     .then((categories) => {
       model.categories = categories;
-      return Product.findByCategoryId(categoryid);
+      return Product.find({
+        categories: categoryid
+      });
     })
     .then((products) => {
       res.render("shop/products", {
@@ -125,13 +100,14 @@ exports.getProduct = (req, res, next) => {
 
 exports.getCart = (req, res, next) => {
   req.user
-    .getCart()
-    .then((products) => {
-      console.log(products);
+    .populate('cart.items.productId')
+    .execPopulate()
+    .then((user) => {
+      // console.log(products);
       res.render("shop/cart", {
         title: "Cart",
         path: "/cart",
-        products: products,
+        products: user.cart.items
       });
     })
     .catch((err) => {
@@ -154,7 +130,9 @@ exports.postCart = (req, res, next) => {
 exports.postCartItemDelete = (req, res, next) => {
   const productid = req.body.productid;
 
-  req.user.deleteCartItem(productid).then(() => {
+  req.user
+  .deleteCartItem(productid)
+  .then(() => {
     res.redirect("/cart");
   });
 };

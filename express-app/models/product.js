@@ -48,7 +48,14 @@ const productSchema = mongoose.Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
     require: true
+  },
+  categories: [
+    {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Category',
+    require: true
   }
+]
 });
 
 module.exports = mongoose.model('Product', productSchema);
