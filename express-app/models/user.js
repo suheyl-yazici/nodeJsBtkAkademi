@@ -14,6 +14,40 @@
 //     email: Sequelize.STRING
 // });
 
+
+const mongoose = require('mongoose');
+
+const userSchema = mongoose.Schema({
+  name: {
+    type: String,
+    required: true
+  },
+  email: {
+    type: String,
+    required: true
+  },
+  cart : {
+    items: [
+      {
+      productId:  {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product',
+        required: true
+      },
+      quantity: {
+        type: Number,
+        required: true
+      }
+    }
+  ]
+  }
+})
+
+module.exports = mongoose.model('User', userSchema);
+
+
+//? Normal veri tabanı ile yaptıklarım
+/*
 const getDb = require("../utility/database").getdb;
 const mongodb = require("mongodb");
 const Collection = require("mongodb/lib/collection");
@@ -185,3 +219,4 @@ class User {
 }
 
 module.exports = User;
+*/

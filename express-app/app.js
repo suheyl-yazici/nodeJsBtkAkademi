@@ -10,8 +10,9 @@ app.set("views", "./views");
 const adminRoutes = require("./routes/admin");
 const userRoutes = require("./routes/shop");
 
+const mongoose = require('mongoose');
+
 const errorController = require("./controllers/errors");
-const mongoConnect = require("./utility/database").mongoConnect;
 
 // ? Bunlar mysql ile oluşturduklarımız.
 //? const sequelize = require("./utility/database");
@@ -29,17 +30,18 @@ const User = require("./models/user");
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 
+
 app.use((req,res,next) => {
-  User.findByUserName('sadikturan')
+  User.findOne({name: 'sadikturan'})
   .then(user => {
-    req.user = new User(user.name, user.email, user.cart, user._id);
-    console.log(req.user)
+    req.user = user;
     next();
   })
   .catch(err => {
     console.log(err)
   })
 })
+
 
 //? app.use((req, res, next) => {
 //?   User.findByPk(1)
@@ -124,6 +126,8 @@ app.use(errorController.get404Page);
 //     console.log(err);
 //   });
 
+
+/*
 mongoConnect((client) => {
   User.findByUserName("sadikturan")
     .then((user) => {
@@ -141,3 +145,34 @@ mongoConnect((client) => {
       console.log(err)
     })
 });
+*/
+
+mongoose.connect('mongodb://localhost/node-app')
+.then(() => {
+  console.log('connected to mongodb');
+
+  User.findOne({name: "sadikturan" })
+    .then((user) => {
+      if (!user) {
+        user = new User({
+          name: 'sadikturan',
+          email: 'email@gmail.com',
+          cart: {
+            items: []
+          }
+        })
+        return user.save();
+      }
+      return user;
+    })
+    .then((user) => {
+      console.log(user);
+      app.listen(3000);
+    })
+    .catch(err => {
+      console.log(err)
+    })
+})
+.catch(err => {
+  console.log(err);
+})

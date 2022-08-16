@@ -27,6 +27,63 @@
 
 // module.exports = Product;
 
+const mongoose = require('mongoose');
+
+const productSchema = mongoose.Schema({
+  name: {
+    type:String,
+    required: true
+  },
+  price: {
+    type:Number,
+    required: true
+  },
+  description: String,
+  imageUrl: String,
+  date: {
+    type: Date,
+    default: Date.now
+  },
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    require: true
+  }
+});
+
+module.exports = mongoose.model('Product', productSchema);
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//? normal mongodb ile yapıldı
+/*
 const getDb = require("../utility/database").getdb;
 const mongodb = require("mongodb");
 class Product {
@@ -125,3 +182,4 @@ class Product {
 }
 
 module.exports = Product;
+*/
