@@ -53,7 +53,7 @@ const productSchema = mongoose.Schema({
     {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Category',
-    require: true
+    require: false
   }
 ]
 });

@@ -3,14 +3,17 @@ const app = express();
 
 const bodyParser = require("body-parser");
 const path = require("path");
+const mongoose = require('mongoose');
+
+const cookieParser = require('cookie-parser')
 
 app.set("view engine", "pug");
 app.set("views", "./views");
 
 const adminRoutes = require("./routes/admin");
 const userRoutes = require("./routes/shop");
+const accountRoutes = require("./routes/account");
 
-const mongoose = require('mongoose');
 
 const errorController = require("./controllers/errors");
 
@@ -29,7 +32,7 @@ const User = require("./models/user");
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
-
+app.use(cookieParser());
 
 app.use((req,res,next) => {
   User.findOne({name: 'sadikturan'})
@@ -57,6 +60,7 @@ app.use((req,res,next) => {
 // routes
 app.use("/admin", adminRoutes);
 app.use(userRoutes);
+app.use(accountRoutes);
 
 app.use(errorController.get404Page);
 
