@@ -4,8 +4,9 @@ const app = express();
 const bodyParser = require("body-parser");
 const path = require("path");
 const mongoose = require('mongoose');
-
 const cookieParser = require('cookie-parser')
+const session = require('express-session');
+const mondoDbStore = require('connect-mongodb-session')(session)
 
 app.set("view engine", "pug");
 app.set("views", "./views");
@@ -29,10 +30,27 @@ const errorController = require("./controllers/errors");
 //? const OrderItem = require("./models/orderItem");
 
 const User = require("./models/user");
+const ConnectionString = 'mongodb://localhost/node-app';
+
+var store = new mondoDbStore({
+  uri: ConnectionString,
+  collection: 'mySessions'
+});
+
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(express.static(path.join(__dirname, "public")));
 app.use(cookieParser());
+app.use(session({
+  secret: 'keyboard cat',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    maxAge: 3600000
+  },
+  store: store
+}))
+
 
 app.use((req,res,next) => {
   User.findOne({name: 'sadikturan'})
@@ -151,31 +169,9 @@ mongoConnect((client) => {
 });
 */
 
-mongoose.connect('mongodb://localhost/node-app')
+mongoose.connect(ConnectionString)
 .then(() => {
-  console.log('connected to mongodb');
-
-  User.findOne({name: "sadikturan" })
-    .then((user) => {
-      if (!user) {
-        user = new User({
-          name: 'sadikturan',
-          email: 'email@gmail.com',
-          cart: {
-            items: []
-          }
-        })
-        return user.save();
-      }
-      return user;
-    })
-    .then((user) => {
-      console.log(user);
-      app.listen(3000);
-    })
-    .catch(err => {
-      console.log(err)
-    })
+app.listen(3000);
 })
 .catch(err => {
   console.log(err);

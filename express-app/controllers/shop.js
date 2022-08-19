@@ -6,7 +6,8 @@ const Order = require("../models/order");
 
 exports.getIndex = (req, res, next) => {
   // console.log(req.isAuthenticated);
-  console.log(req.cookies.isAuthenticated);
+  // console.log(req.cookies.isAuthenticated);
+  console.log(req.session.isAuthenticated);
   Product.find()
     .then((products) => {
       return products;
@@ -19,7 +20,7 @@ exports.getIndex = (req, res, next) => {
           products: products,
           path: "/",
           categories: categories,
-          isAuthenticated: req.cookies.isAuthenticated === 'true'
+          isAuthenticated: req.session.isAuthenticated
         });
       })
     })
