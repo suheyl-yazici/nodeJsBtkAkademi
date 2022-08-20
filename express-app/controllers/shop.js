@@ -43,6 +43,7 @@ exports.getProducts = (req, res, next) => {
           products: products,
           path: "/",
           categories: categories,
+          isAuthenticated: req.session.isAuthenticated
         });
       })
     })
@@ -69,6 +70,7 @@ exports.getProductsByCategoryId = (req, res, next) => {
         categories: model.categories,
         selectedCategory: categoryid,
         path: "/products",
+        isAuthenticated: req.session.isAuthenticated
       });
     })
     .catch((err) => {
@@ -84,6 +86,7 @@ exports.getProduct = (req, res, next) => {
         title: product.name,
         product: product,
         path: "/products",
+        isAuthenticated: req.session.isAuthenticated
       });
     })
     .catch((err) => {
@@ -114,7 +117,8 @@ exports.getCart = (req, res, next) => {
       res.render("shop/cart", {
         title: "Cart",
         path: "/cart",
-        products: user.cart.items
+        products: user.cart.items,
+        isAuthenticated: req.session.isAuthenticated
       });
     })
     .catch((err) => {
@@ -153,6 +157,7 @@ exports.getOrders = (req, res, next) => {
         title: "Orders",
         path: "/orders",
         orders: orders,
+        isAuthenticated: req.session.isAuthenticated
       });
     })
     .catch((err) => console.log(err));
