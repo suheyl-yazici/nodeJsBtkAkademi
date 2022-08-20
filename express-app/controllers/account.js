@@ -1,11 +1,14 @@
 const User = require('../models/user');
 const bcrypt = require('bcrypt');
+const session = require('express-session');
 
 exports.getLogin = (req,res,next) => {
+    var errorMessage = req.session.errorMessage;
+    delete req.session.errorMessage;
     res.render('account/login', {
         path: '/login',
         title: 'Login',
-        isAuthenticated: req.session.isAuthenticated
+        errorMessage: errorMessage
     })
 }
 
@@ -17,7 +20,12 @@ exports.postLogin = (req,res,next) => {
     User.findOne({email: email})
     .then(user =>{
         if(!user) {
-            return res.redirect("/login");
+            req.session.errorMessage = 'Bu mail adresi ile bir kayıt bulunamamıştır';
+            req.session.save(function(err){
+                console.log(err)
+                return res.redirect("/login");
+
+            })
         }
 
         bcrypt.compare(password, user.password)
@@ -43,10 +51,12 @@ exports.postLogin = (req,res,next) => {
 }
 
 exports.getRegister = (req,res,next) => {
+    var errorMessage = req.session.errorMessage;
+    delete req.session.errorMessage;
     res.render('account/register', {
         path: '/register',
         title: 'Register',
-        isAuthenticated: req.session.isAuthenticated
+        errorMessage: errorMessage
     })
 }
 
@@ -58,9 +68,12 @@ exports.postRegister = (req,res,next) => {
     User.findOne({email:email})
     .then(user =>{
         if(user) {
-            return res.redirect('/register');
+            req.session.errorMessage = 'Bu mail adresi ile daha önce kayıt olunmuş';
+            req.session.save(function(err){
+                console.log(err)
+                return res.redirect("/register");
+            })
         }
-
         return bcrypt.hash(password, 10);
 
     })
