@@ -3,27 +3,27 @@ const router = express.Router();
 
 const shopController = require('../controllers/shop');
 const isAuthenticated = require('../middleware/authentication')
-const csrf = require('../middleware/csrf');
+const locals = require('../middleware/locals');
 
 
 
-router.get("/", csrf,shopController.getIndex);
+router.get("/", locals,shopController.getIndex);
 
-router.get("/products",csrf, shopController.getProducts);
+router.get("/products",locals, shopController.getProducts);
 
-router.get("/products/:productid", csrf,shopController.getProduct);
+router.get("/products/:productid", locals,shopController.getProduct);
 
-router.get("/categories/:categoryid", csrf,shopController.getProductsByCategoryId);
+router.get("/categories/:categoryid", locals,shopController.getProductsByCategoryId);
 
-router.get("/cart",isAuthenticated ,csrf, shopController.getCart);
+router.get("/cart",isAuthenticated ,locals, shopController.getCart);
 
-router.post("/cart",isAuthenticated ,csrf, shopController.postCart);
+router.post("/cart",isAuthenticated ,locals, shopController.postCart);
 
-router.post("/delete-cartitem", isAuthenticated ,csrf,shopController.postCartItemDelete);
+router.post("/delete-cartitem", isAuthenticated ,locals,shopController.postCartItemDelete);
 
-router.get("/orders",isAuthenticated ,csrf, shopController.getOrders);
+router.get("/orders",isAuthenticated ,locals, shopController.getOrders);
 
-router.post("/create-order", isAuthenticated ,csrf,shopController.postOrder);
+router.post("/create-order", isAuthenticated ,locals,shopController.postOrder);
 
 
 module.exports = router;
